@@ -1,0 +1,49 @@
+In aceasta tema se doreste a fi prezentate principiile SOLID folosite.
+
+Tinand cont ca cerintele problemei sunt ambigue si detaliile sunt lipsa, pentru simplificarea implementarii, am considerat:
+- ca masina de facut paine are o lista cu retete de paine din care utilizatorul alege una pentru a fi pregatita
+- ca ingredientele sunt sub forma de String, evitand astfel sa am o interfata Ingredients,
+care sa fie implementata de diferite tipuri de ingrediente : lactate, condimente, fructe, etc., 
+care la randul lor sa fie extinse de ingrediente cu diferite proprietati, 
+cum ar fi faina care poate fi de mai multe tipuri, de gramaj diferit, s.a.m.d. (la fel si apa, drojdia, uleiul etc.). 
+- ca orice paine se face mixand ingredientele ei, framantand-o, lasand-o la dospit si dupa aceea se coace
+- ca doar framantatul poate sa difere de la o paine obisnuita la un cozonac/panettone (am citit eu pe net ca se framanta si cu ceva carlig
+si cu ceva paleta.. n-am facut niciodata)
+- ca dimensiunea pentru orice tip de paine e una STANDARD, iar pentru painile normale se poate schimba in SMALL
+- problema se poate complica tare :), asa ca am ales sa implementez minimul
+
+Legat de aparatul de facut paine, nu ni se spune exact cum functioneaza. Eu am considerat ca se alege o reteta dintr-o lista si, de exemplu,
+pentru paine simpla exista 2 intrari : paine simpla standard, paine simpla mica. In acest mod am putut pune ingredientele ca o lista de String.
+Daca ni s-ar fi spus ca utilizatorul poate sa isi aleaga tipul de paine dintr-o lista si dupa aceea ce dimensiune doreste din alta lista, as fi facut 2 metode : 
+makeBreadWithDimension(BreadWithDimensionRecipeInterface recipe, BreadDimension dimension) si
+makeBread(StandardBreadRecipeInterface recipe)
+Astfel, ar fi aparut si alte interfete pentru paine. StandardBreadRecipeInterface ar fi fost la fel cu ce aveam acum.
+BreadWithDimensionRecipeInterface ar fi avut o metoda de doRecipe(BreadDimension dimension), iar reteta ar fi avut la fel ca si acum un camp denumit dimension, 
+semnificand pentru ce dimensiune este gramajul ingredientelor din reteta, iar in doRecipe, daca dimensiunea aleasa (trimisa ca paranetru) ar fi diferita de cea 
+din reteta, s-ar fi calculat gramajul ingredientelor. Pentru asta ar fi fost nevoie de un Map de ingredients <nume ingredient, gramaj>
+
+Daca ni s-ar fi spus care e diferenta intre cozonac si panettone, probabil as fi facut o alta clasa care extinde CakeBreadRecipe. 
+Dar, tinand cont de implementarea curenta, aceasta se poate extinde oricand dupa ce vom stii mai multe informatii, deci respecta 
+principiul Open-Closed.
+
+Tinand cont ca in cerinta ni se spune ca se poate alege intre paine simpla, integrala si cu seminte, un prim instict a fost sa creez
+clase separate pentru fiecare, dar ele in esenta sunt la fel, diferite fiind ingredientele : faina alba sau integrala; simpla sau cu seminte,
+deci nu avea niciun sens.
+
+SOLID:
+
+- Single Responsability - fiecare clasa e responsabila de un lucru: masina de facut paine sa faca paine dupa o reteta; reteta sa descrie pasii,
+ingredientele si pentru paine normala si dimensiunea pt care acea reteta cu acele ingrediente se presteaza
+- Open-Closed - clasele sunt deschide pentru extindere. De exemplu daca se va dori sa se adauge panettone pentru ca are anumite aspecte ce il 
+diferentiaza de cozonac, se poate extinde CakeBreadRecipe. Daca se doreste sa se adauge un aparat PRO, cu alegerea dimensiunii dintr-o lista, se 
+poate creea o noua clasa ProBreadMachine, care implementeaza ProBreadMachineInterface ce extinde BreadMachineInterface si ii adauga o noua metoda
+makeBreadWithDimension
+- Liskov Substitution - clasele copil pot inlocui clasa parinte, de aceea se folosesc interfete in metode, pentru ca nu conteaza ce obiect este trimis.
+- Interface Segregation - toate clasele ce implementeaza interfetele existene au un comportament descris in metodele ce le implementeaza. Nu exista vreo
+metode din vreo interfata fara implementare. De exemplu: orice tip de masina de paine am adauga, ar avea un nume, o lista de retete si ar face paine.
+- Dependency Inversion - este un principiu care e respectat daca Liskov si Open-Closed e respectat; clasele sunt dependente de abstractizari in general.
+Am omis sa folosesc Dependency Inversion intr-un caz: BreadMachine are Model, deci depinde de ceva low-level, nu de o abstractizare. 
+Ideal, SOLID, ar fi fost sa am o interfata Specification implementata de toate caracteristicile masinii de facut paine, iar in interiorul
+clasei masina de paine sa fie o lista cu ele. Mi se pare ca in munca de zi cu zi, daca datele sunt tinute intr-o baza de date, se doreste 
+modelare claselor in functie de baza de date, dar daca datele ar fi tinute in memoria aparatului, atunci intr-adevar, o lista cu specificatii
+ar fi de ajuns.
